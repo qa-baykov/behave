@@ -1,0 +1,57 @@
+name: test-compare-stock-symbols
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # Runs every day at 9 AM UTC / 2 AM PDT
+  workflow_dispatch: 
+    inputs:
+      run_option:
+        description: 'Choose the behave run option'
+        required: true
+        default: 'behave -f plain -k --tags="@default"'
+        type: choice
+        options:
+          - 'behave -f plain -k --tags="@default"'
+          - 'behave -f plain -k --tags="@not_in_test"'
+          - 'behave -f plain -k --tags="@not_in_actual"'
+          
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: ${{ inputs.run_option }}
+
+      - name: Verify log.txt exists
+        run: |
+          if [ ! -f log.txt ]; then
+            echo "Error: log.txt not found!"
+            exit 1
+          else
+            echo "log.txt exists and will be uploaded."
+          fi
+
+      - name: Upload log.txt as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-log
+          path: log.txt
+
+      - name: Print test result
+        run: |
+          echo "Test result:"
+          cat log.txt
