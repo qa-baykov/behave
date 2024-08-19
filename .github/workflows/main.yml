@@ -3,7 +3,6 @@ name: test-compare-stock-symbols
 on:
   schedule:
     - cron: '0 9 * * *'
-    - cron: '* * * * *'
   workflow_dispatch: 
     inputs:
       run_option:
