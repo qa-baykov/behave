@@ -46,7 +46,7 @@ behave -f plain -k --tags="@not_in_actual"
 **Test will be executed automatically by schedule at 09:00 AM UTC (02:00 AM PDT) every day**
 ``` yaml
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '0 2 * * *'
 ```
 
 ## Viewing Test Results
